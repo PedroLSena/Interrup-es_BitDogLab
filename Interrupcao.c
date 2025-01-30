@@ -35,47 +35,47 @@ const uint8_t numbers[10][25] = {
      1,0,0,0,1,
      1,1,1,1,1},
     // 1
-    {0,0,1,0,0,
+    {0,1,1,1,0,
+     0,0,1,0,0,
+     0,0,1,0,0,
      0,1,1,0,0,
-     0,0,1,0,0,
-     0,0,1,0,0,
-     0,1,1,1,0},
+     0,0,1,0,0},
     // 2
     {1,1,1,1,1,
-     0,0,0,0,1,
-     1,1,1,1,1,
      1,0,0,0,0,
+     1,1,1,1,1,
+     0,0,0,0,1,
      1,1,1,1,1},
     // 3
     {1,1,1,1,1,
-     1,0,0,0,0,
-     1,1,1,1,1,
-     1,0,0,0,0,
-     1,1,1,1,1},
-    // 4
-    {1,0,0,0,1,
-     1,0,0,0,1,
-     1,1,1,1,1,
-     1,0,0,0,0,
-     0,0,0,0,1},
-    // 5
-    {1,1,1,1,1,
-     1,0,0,0,0,
+     0,0,0,0,1,
      1,1,1,1,1,
      0,0,0,0,1,
      1,1,1,1,1},
-    // 6
-    {1,1,1,1,1,
-     1,0,0,0,0,
+    // 4
+    {1,0,0,0,0,
+     0,0,0,0,1,
      1,1,1,1,1,
      1,0,0,0,1,
+     1,0,0,0,1},
+    // 5
+    {1,1,1,1,1,
+     0,0,0,0,1,
+     1,1,1,1,1,
+     1,0,0,0,0,
+     1,1,1,1,1},
+    // 6
+    {1,1,1,1,1,
+     1,0,0,0,1,
+     1,1,1,1,1,
+     0,0,0,0,1,
      1,1,1,1,1},
     // 7
-    {1,1,1,1,1,
-     1,0,0,0,0,
-     0,0,0,1,0,
+    {0,0,0,1,0,
      0,0,1,0,0,
-     0,1,0,0,0},
+     0,1,0,0,0,
+     0,0,0,0,1,
+     1,1,1,1,1},
     // 8
     {1,1,1,1,1,
      1,0,0,0,1,
@@ -84,11 +84,17 @@ const uint8_t numbers[10][25] = {
      1,1,1,1,1},
     // 9
     {1,1,1,1,1,
-     1,0,0,0,1,
-     1,1,1,1,1,
      0,0,0,0,1,
+     1,1,1,1,1,
+     1,0,0,0,1,
      1,1,1,1,1}
 };
+
+// Declare function prototypes
+void np_set_led(unsigned int index, uint8_t r, uint8_t g, uint8_t b); // Add this line
+void np_clear(void);
+void np_init(unsigned int pin);
+void np_write();
 
 // Interrupção para tratamento dos botões
 void button_irq(uint gpio, uint32_t events) {
@@ -126,8 +132,13 @@ void init_rgb() {
     gpio_set_dir(LED_B, GPIO_OUT);
 }
 
+void np_clear(void) {
+    for(unsigned int i = 0; i < LED_COUNT; i++) 
+        np_set_led(i, 0, 0, 0);
+}
+
 // Funções para controle da matriz de LEDs
-void np_init(uint pin) {
+void np_init(unsigned int pin) {
     uint offset = pio_add_program(np_pio, &matriz_led_program);
     sm = pio_claim_unused_sm(np_pio, true);
     
@@ -136,19 +147,14 @@ void np_init(uint pin) {
     np_clear();
 }
 
-void np_set_led(uint index, uint8_t r, uint8_t g, uint8_t b) {
+void np_set_led(unsigned int index, uint8_t r, uint8_t g, uint8_t b) {
     leds[index].R = r;
     leds[index].G = g;
     leds[index].B = b;
 }
 
-void np_clear(void) {
-    for(uint i = 0; i < LED_COUNT; i++) 
-        np_set_led(i, 0, 0, 0);
-}
-
 void np_write() {
-    for(uint i = 0; i < LED_COUNT; i++) {
+    for(unsigned int i = 0; i < LED_COUNT; i++) {
         // Envia os bytes na ordem GRB
         pio_sm_put_blocking(np_pio, sm, leds[i].G);
         pio_sm_put_blocking(np_pio, sm, leds[i].R);
