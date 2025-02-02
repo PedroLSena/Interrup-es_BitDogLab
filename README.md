@@ -2,6 +2,7 @@
 
 ![Badge Versão](https://img.shields.io/badge/Versão-1.0-blue)
 ![Licença](https://img.shields.io/badge/Licença-MIT-green)
+Video de ensaio:https://youtube.com/shorts/jPSkSF9_XM0
 
 Projeto desenvolvido para a placa BitDogLab utilizando o microcontrolador RP2040. Implementa um contador interativo com display em matriz LED 5x5 e controle por botões com tratamento de bouncing.
 
